@@ -8,12 +8,15 @@ const router=express.Router()
 router.route('/').get(todoController.getAllTodo)
 
 //get todo by id
+router.route('/:todo_id').get(todoController.getTodo)
 
 //create a todo
+router.route('/').post(todoController.createTodo)
 
 //update a todo
+router.route('/:todo_id').put(todoController.updateTodo)
 
 //delete a todo 
-
+router.route('/:todo_id').delete(todoController.deleteTodo)
 
 module.exports= router
