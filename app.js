@@ -6,6 +6,7 @@ const userRouter = require("./routes/userRoute");
 const session = require('express-session')
 
 //=>for access req.body
+
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 app.use(session({

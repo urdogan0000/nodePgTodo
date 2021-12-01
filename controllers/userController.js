@@ -1,24 +1,29 @@
 const pool = require("../db/db");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 exports.loginUser = async (req, res) => {
   try {
-    const {email,password}=req.body
-    const user = await pool.query("SELECT * FROM users where email=$1 ",[email]);
-    if(user.rowCount>0){
-      
-      bcrypt.compare(password,user.rows[0].password,(err,isMatch)=>{
-        if(isMatch){
-          req.session.token=user.rows[0].user_id
-          res.status(200).json('başarılı bir şekilde giriş yapıldı')
-        }else{
+    const { email, password } = req.body;
+    const user = await pool.query("SELECT * FROM users where email=$1 ", [
+      email,
+    ]);
+    if (user.rowCount > 0) {
+      var token = jwt.sign({ user_id: user.rows[0].user_id }, "shhhhh", {
+        expiresIn: "1h",
+      });
+
+      bcrypt.compare(password, user.rows[0].password, async (err, isMatch) => {
+        if (isMatch) {
+          req.session.token = token;
+          res.status(200).json(token);
+        } else {
           res.status(400).json({
             status: "failed due to wrong credantiels",
             err,
           });
         }
-      })
-
+      });
     }
   } catch (error) {
     res.status(400).json(error);
@@ -77,9 +82,9 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-exports.logoutUser=(req,res)=>{
-  console.log(req.session.token)
-  req.session.destroy(()=>{
-    res.json('çıkış yapıldı')
-  })
-}
+exports.logoutUser = (req, res) => {
+  console.log(req.session.token);
+  req.session.destroy(() => {
+    res.json("çıkış yapıldı");
+  });
+};

@@ -1,11 +1,11 @@
 const express=require('express')
 const todoController=require('../controllers/todoController')
-
+const authMiddleware=require('../middlewares/authMiddleware')
 const router=express.Router()
 
 
 //get all todos     url: http://localhost:8080/
-router.route('/').get(todoController.getAllTodo)
+router.route('/').get(authMiddleware,todoController.getAllTodo)
 
 //get todo by id
 router.route('/:todo_id').get(todoController.getTodo)
