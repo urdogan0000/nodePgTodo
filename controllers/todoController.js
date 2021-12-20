@@ -1,12 +1,39 @@
 const pool = require("../db/db");
+const { rd_status, rd_client } = require("../db/redisDb");
 
 //get all todos
 exports.getAllTodo = async (req, res) => {
   try {
-    const toDos = await pool.query("SELECT * FROM todo ORDER  BY todo_id ASC");
-    res.status(200).json(toDos.rows);
-  } catch (error) {
-    console.log(error);
+    console.log("Redis Status: " + RD_STATUS);
+
+    if (global.RD_STATUS) {
+      const toDos = await pool.query(
+        "SELECT * FROM todo where user_id=$1 ORDER  BY todo_id ASC",
+        [req.user]
+      );
+
+      toDos.rows.map(async (item) => {
+        const todo = "todo:" + item.todo_id;
+
+        await rd_client.set(todo, JSON.stringify(item));
+      });
+
+      res.status(200).json(toDos.rows);
+    } else {
+      const toDos = await pool.query(
+        "SELECT * FROM todo where user_id=$1 ORDER  BY todo_id ASC",
+        [req.user]
+      );
+
+      toDos.rows.map(async (item) => {
+        const todo = "todo:" + item.todo_id;
+      });
+      console.log(toDos.rows);
+
+      res.status(200).json(toDos.rows);
+    }
+  } catch (err) {
+    console.log(err);
   }
 };
 
@@ -27,8 +54,8 @@ exports.createTodo = async (req, res) => {
   try {
     const { description } = req.body;
     const newTodo = await pool.query(
-      "INSERT INTO todo (description) VALUES  ($1) RETURNING *",
-      [description]
+      "INSERT INTO todo (description,user_id) VALUES  ($1,$2) RETURNING *",
+      [description, req.user]
     );
 
     res.status(200).json(newTodo.rows[0]);

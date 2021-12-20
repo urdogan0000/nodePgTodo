@@ -1,6 +1,8 @@
 const express = require("express");
 const db = require("./db/db");
+
 const app = express();
+require('dotenv')
 const todoRouter = require("./routes/todoRoute");
 const userRouter = require("./routes/userRoute");
 const session = require('express-session')
@@ -10,7 +12,7 @@ const session = require('express-session')
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
-  secret: 'keyboard cat',
+  secret: process.env.SESSION_KEY,
   resave: false,
   saveUninitialized: true,
 }))

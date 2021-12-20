@@ -4,7 +4,11 @@ CREATE DATABASE todo_database;
 
 CREATE TABLE todo(
     todo_id SERIAL PRIMARY KEY NOT NULL,
-    description VARCHAR(255)
+    description VARCHAR(255),
+    user_id INT ,
+    CONSTRAINT fk_users 
+    FOREIGN KEY(user_id)   
+    REFERENCES users(user_id)  
 );
 
 --create users

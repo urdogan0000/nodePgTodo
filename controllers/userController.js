@@ -9,7 +9,7 @@ exports.loginUser = async (req, res) => {
       email,
     ]);
     if (user.rowCount > 0) {
-      var token = jwt.sign({ user_id: user.rows[0].user_id }, "shhhhh", {
+      var token = jwt.sign({ user_id: user.rows[0].user_id }, process.env.JWT_SECRETKEY, {
         expiresIn: "1h",
       });
 

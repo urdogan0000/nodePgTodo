@@ -10,8 +10,9 @@ router.route('/').get(authMiddleware,todoController.getAllTodo)
 //get todo by id
 router.route('/:todo_id').get(todoController.getTodo)
 
+//the route needs authantication to create todos
 //create a todo
-router.route('/').post(todoController.createTodo)
+router.route('/').post(authMiddleware,todoController.createTodo)
 
 //update a todo
 router.route('/:todo_id').put(todoController.updateTodo)
