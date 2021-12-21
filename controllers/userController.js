@@ -84,7 +84,6 @@ exports.deleteUser = async (req, res) => {
 };
 
 exports.logoutUser = (req, res) => {
-  console.log(req.session.token);
   req.session.destroy(() => {
     res.json("çıkış yapıldı");
   });

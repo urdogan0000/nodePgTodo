@@ -1,8 +1,9 @@
 const { createClient } = require("redis");
 global.RD_STATUS = 0;
 const rd_client = createClient({
-  host:"localhost",
+  host:"127.0.0.1",
   port:"6379",
+  
 });
 
 (async () => {
