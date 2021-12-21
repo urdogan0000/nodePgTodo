@@ -1,6 +1,9 @@
 const { createClient } = require("redis");
 global.RD_STATUS = 0;
-const rd_client = createClient();
+const rd_client = createClient({
+  host:"localhost",
+  port:"6379",
+});
 
 (async () => {
   await rd_client.connect();

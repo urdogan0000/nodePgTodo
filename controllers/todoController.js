@@ -5,20 +5,26 @@ const { rd_status, rd_client } = require("../db/redisDb");
 exports.getAllTodo = async (req, res) => {
   try {
     console.log("Redis Status: " + RD_STATUS);
-
+    const user = "user:" + req.user;
+    //check if redis server connected if connected first check redis db else pq
     if (global.RD_STATUS) {
-      const toDos = await pool.query(
-        "SELECT * FROM todo where user_id=$1 ORDER  BY todo_id ASC",
-        [req.user]
-      );
+      const getTodo = await rd_client.get(user);
 
-      toDos.rows.map(async (item) => {
-        const todo = "todo:" + item.todo_id;
+      //this check if data is in redis cache if in send to client if not go to pg get data and set it to cache
+      if (getTodo) {
+        console.log("from cache");
+        res.status(200).json(getTodo);
+      } else {
+        console.log("from db");
+        const toDos = await pool.query(
+          "SELECT * FROM todo where user_id=$1 ORDER  BY todo_id ASC",
+          [req.user]
+        );
 
-        await rd_client.set(todo, JSON.stringify(item));
-      });
+        await rd_client.set(user, JSON.stringify(toDos.rows));
 
-      res.status(200).json(toDos.rows);
+        res.status(200).json(JSON.stringify(toDos.rows));
+      }
     } else {
       const toDos = await pool.query(
         "SELECT * FROM todo where user_id=$1 ORDER  BY todo_id ASC",

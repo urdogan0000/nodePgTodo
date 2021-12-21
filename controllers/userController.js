@@ -16,6 +16,7 @@ exports.loginUser = async (req, res) => {
       bcrypt.compare(password, user.rows[0].password, async (err, isMatch) => {
         if (isMatch) {
           req.session.token = token;
+         
           res.status(200).json(token);
         } else {
           res.status(400).json({
